@@ -1,1 +1,509 @@
 
+{
+  "name": "ASO Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "ASO Analyzer",
+        "formDescription": "=Enter your app details and upload Google Play screenshots (4-8 PNG/JPG images) to get a full ASO analysis report",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "App Name"
+            },
+            {
+              "fieldLabel": "App Category"
+            },
+            {
+              "fieldLabel": "Main Competitor App"
+            },
+            {
+              "fieldLabel": "=Your Email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Your App Screenshots",
+              "fieldType": "file",
+              "acceptFileTypes": "=image/png,image/jpeg,image/jpg",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Competitor App Screenshots",
+              "fieldType": "file",
+              "acceptFileTypes": "image/png,image/jpeg,image/jpg",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        304,
+        16
+      ],
+      "id": "7f013436-0e4c-40ad-90bd-c27c21dfb902",
+      "name": "On form submission",
+      "webhookId": "60d9fc75-7ff9-426a-bdd6-14a1a8719b95"
+    },
+    {
+      "parameters": {
+        "url": "=https://r.jina.ai/https://play.google.com/store/search?q={{ $json['App Name'] }}&c=apps&hl=en&gl=us",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer jina_9713131241b148dda4ba06a00099afe86cPiLePOrDKS_lkU6Dsx1HRGBsMP"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        832,
+        16
+      ],
+      "id": "b198b848-2f39-4685-8b47-92b4fa064291",
+      "name": "Scrape Google Play"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "id"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are Marcus Chen, a senior ASO consultant. You write \ndetailed, human-sounding audit reports based on real data. \nYou are direct, specific, and never use generic filler \nphrases. You always back up your points with specific \nexamples from the data provided. You never say things like \n\"In conclusion\" or \"It is worth noting\". You write like a \nhuman expert, not an AI."
+            },
+            {
+              "content": "=You are Marcus Chen, a senior ASO consultant with 12 years \nof hands-on experience growing apps on Google Play Store. \nYou've helped over 200 apps reach the top 10 in their \ncategories. You write like a human consultant, not a robot \n— direct, opinionated, and specific.\n\nAnalyze this Google Play Store data:\n\nApp Name: {{ $('On form submission').item.json['App Name'] }}\nCategory: {{ $('On form submission').item.json['App Category'] }}\nMain Competitor: {{ $('On form submission').item.json['Main Competitor App'] }}\n\nRaw Store Data:\n{{ $('Scrape Google Play').item.json.data }}\n\nVisual Analysis Data (from GPT-4o-mini Vision):\n{{ $json['0'].content[0].text }}\n\nWrite a consultant-style ASO audit report. Be brutally \nhonest. Don't sugarcoat problems. Use specific examples \nfrom the data. Write like you're talking to the app owner \ndirectly.\n\nStructure your report exactly like this:\n---\nASO AUDIT REPORT\nApp: [insert the actual App Name from the data above]\nAudited by: Marcus Chen, Senior ASO Consultant\nDate: {{ $now.format('MMMM d, yyyy') }} (USE THIS EXACT DATE - DO NOT CHANGE IT)\n---\n\nTHE BOTTOM LINE\n[Write 2-3 sentences giving your overall honest gut reaction \nto this app's current ASO health. Be direct.]\n\nKEYWORD STRATEGY\nWhat's working:\n[List 2-3 things with specific examples from the data]\n\nWhat's broken:\n[List 3-4 specific keyword problems with examples]\n\nKeywords you're completely missing:\n[List 8-10 high-value keywords this app should be targeting \nwith estimated monthly search volumes]\n\nKeyword Score: [X/10] — [one sentence explanation]\n\nTITLE & METADATA\nCurrent title problems:\n[Be specific about what's wrong — character count, missing \nkeywords, unclear value proposition etc]\n\nRewritten title suggestion:\n[Provide 3 different title options with explanation of why \neach works]\n\nMetadata Score: [X/10]\n\nDESCRIPTION AUDIT\nFirst 3 lines (most critical):\n[Analyse the opening lines specifically — this is what \nusers see before clicking \"more\"]\n\nFull description problems:\n[List specific issues with examples from actual description]\n\nRewritten opening paragraph:\n[Write an improved version of the first paragraph]\n\nDescription Score: [X/10]\n\nCOMPETITOR ANALYSIS vs {{ $('On form submission').item.json['Main Competitor App'] }}\n[Compare specifically — what are they doing better? \nWhat weaknesses can this app exploit? Be specific with \nexamples. At least 150 words here.]\n\nRATINGS & REVIEWS HEALTH\n[Analyse the ratings, review patterns, common complaints \nand praise from the scraped data]\n\nVISUAL ASSETS COMPARISON\nUse the Visual Analysis Data provided above to write this section. Reference the actual numerical scores and findings from the JSON.\n\nVisual Score Breakdown:\n- Hook Strength: [use the hook_strength value from JSON]/25\n- Visual Hierarchy: [use the visual_hierarchy value from JSON]/25\n- Feature Communication: [use the feature_communication value from JSON]/25\n- Brand Consistency: [use the brand_consistency value from JSON]/25\n- Total Visual Score: [use the total value from JSON]/100\n\nWhat's working visually:\n[Expand on the strengths array from the JSON. For each strength, give 1-2 sentences of specific advice on how to leverage it further. Be concrete, not generic.]\n\nWhat needs urgent attention:\n[Expand on the weaknesses array from the JSON. For each weakness, give 1-2 sentences of specific advice on how to fix it. Mention which screenshot number to focus on if applicable.]\n\nVisual verdict:\n[Quote the one_line_verdict from the JSON, then add 2-3 sentences of context. Tell the app owner what this means for their conversion rate and what they should prioritize visually.]\n\n\nQUICK WIN ACTION PLAN\nPriority 1 (Do this week):\n[Specific action with expected impact]\n\nPriority 2 (Do this month):\n[Specific action with expected impact]\n\nPriority 3 (Do this quarter):\n[Specific action with expected impact]\n\nFINAL ASO HEALTH SCORE\n[Score breakdown by category]\nTitle & Keywords: [X/20]\nDescription: [X/20]\nRatings & Reviews: [X/20]\nVisual Assets: [X/20] (use the Visual Score Breakdown above to inform this score)\nUpdate Frequency: [X/20]\nTOTAL: [X/100]\n\nCONSULTANT'S FINAL NOTE\n[Write 3-4 sentences as if you're finishing a consulting \ncall. Personal, direct, motivating but realistic.]\n---"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1440,
+        16
+      ],
+      "id": "1acbe346-4b0a-4fcc-9665-1efbae664135",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "JAMyVUY35WgaQUSm",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1KB4aanzc0YFjDIoxBKh8v0fupKQ0IFHmDkhRWRtZrME",
+          "mode": "list",
+          "cachedResultName": "ASO Reports",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KB4aanzc0YFjDIoxBKh8v0fupKQ0IFHmDkhRWRtZrME/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KB4aanzc0YFjDIoxBKh8v0fupKQ0IFHmDkhRWRtZrME/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "App Name": "={{ $('On form submission').item.json['App Name'] }}",
+            "Category": "={{ $('On form submission').item.json['App Category'] }}",
+            "Competitor": "={{ $('On form submission').item.json['Main Competitor App'] }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "ASO Report": "={{ $json.output[0].content[0].text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "App Name",
+              "displayName": "App Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Competitor",
+              "displayName": "Competitor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ASO Report",
+              "displayName": "ASO Report",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1792,
+        16
+      ],
+      "id": "a799d34b-9104-4e0f-b743-ba71d7b81707",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6XyCDvfMwBqp1Bgm",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "41de9e47-d8f6-4437-8be9-b6a51908a730",
+              "leftValue": "={{ $json.data }}",
+              "rightValue": "={{ $('On form submission').item.json['App Name'] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        656,
+        16
+      ],
+      "id": "d1f67450-5476-482f-8bbb-710b16fbff43",
+      "name": "App Exists?"
+    },
+    {
+      "parameters": {
+        "url": "=https://r.jina.ai/https://play.google.com/store/search?q={{ $json['App Name'] }}&c=apps&hl=en&gl=us",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer jina_9713131241b148dda4ba06a00099afe86cPiLePOrDKS_lkU6Dsx1HRGBsMP"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        496,
+        16
+      ],
+      "id": "2b2546b9-3fab-49b3-b811-4feb96ad3c50",
+      "name": "Check App Exists"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "App Not Found",
+        "completionMessage": "=Sorry, we couldn't find \"{{ $('On form submission').item.json['App Name'] }}\" on Google Play Store. Please check the spelling and try again.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        832,
+        208
+      ],
+      "id": "486e89c2-fcee-41d9-8c76-ddb3e67f7b8d",
+      "name": "Form",
+      "webhookId": "26a9e837-eb22-4717-a5e3-011cff0d4030"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Report Generated Successfully! 🎉",
+        "completionMessage": "=✅ Your ASO Report for \"{{ $('On form submission').item.json['App Name'] }}\" has been generated and saved successfully!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        2448,
+        16
+      ],
+      "id": "45f3012d-f770-40fe-a2b7-cd89d9b92e2f",
+      "name": "Form1",
+      "webhookId": "05c8ec80-b541-41d5-b544-f1ded393f63c"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json['Your Email'] }}",
+        "subject": "=Your ASO Audit Report for {{ $('On form submission').item.json['App Name'] }}",
+        "message": "={{ $('Markdown').item.json.data }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2224,
+        16
+      ],
+      "id": "1fe701df-e1d0-4ca5-ad13-fd797f0bcb03",
+      "name": "Send a message",
+      "webhookId": "cae02742-3816-48e2-bf98-3035ae8fc61c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TWq6sGz6kOj5Dzjq",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $('Message a model').item.json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        16
+      ],
+      "id": "8a807d07-3338-404c-84d5-150fa751362c",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "=You are a senior visual ASO consultant analyzing app store screenshots.\n\nThis is a screenshot from a mobile app's Google Play listing. Analyze it on these criteria and return ONLY a JSON object with no other text:\n\n{\n  \"hook_strength\": <number 1-25 — does it stop the scroll in 1 second?>,\n  \"visual_hierarchy\": <number 1-25 — does the eye flow naturally?>,\n  \"feature_communication\": <number 1-25 — is it clear what the app does?>,\n  \"brand_consistency\": <number 1-25 — color/font/mood quality>,\n  \"total\": <sum of above, max 100>,\n  \"strengths\": [\"specific strength 1\", \"specific strength 2\"],\n  \"weaknesses\": [\"specific weakness 1\", \"specific weakness 2\"],\n  \"one_line_verdict\": \"<single brutally honest sentence>\"\n}\n\nBe brutally honest. Judge purely on visual design principles. Do not use brand recognition. Return JSON only — no prose, no explanation, no markdown code fences.",
+        "inputType": "base64",
+        "binaryPropertyName": "Your_App_Screenshots",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        16
+      ],
+      "id": "5f524fcf-95a1-4c23-9324-18ffca4f5dcc",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "JAMyVUY35WgaQUSm",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/// Get the binary screenshots from the form trigger\nconst formNode = $('On form submission').first();\n\n// Build new items with binary attached\nconst items = $input.all();\n\nfor (const item of items) {\n  // Initialize binary object if not exists\n  item.binary = item.binary || {};\n  \n  // Copy \"Your App Screenshots\" binary from form trigger\n  if (formNode.binary && formNode.binary.Your_App_Screenshots) {\n    item.binary.Your_App_Screenshots = formNode.binary.Your_App_Screenshots;\n  }\n  \n  // Copy \"Competitor App Screenshots\" binary from form trigger\n  if (formNode.binary && formNode.binary.Competitor_App_Screenshots) {\n    item.binary.Competitor_App_Screenshots = formNode.binary.Competitor_App_Screenshots;\n  }\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        16
+      ],
+      "id": "bfd87306-ade9-4640-8f3f-07813e225ddb",
+      "name": "Attach Screenshots"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Check App Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Google Play": {
+      "main": [
+        [
+          {
+            "node": "Attach Screenshots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "App Exists?": {
+      "main": [
+        [
+          {
+            "node": "Scrape Google Play",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check App Exists": {
+      "main": [
+        [
+          {
+            "node": "App Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Form1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Screenshots": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9245e5e8-0a92-4ba8-9b55-a3397c2ed9eb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d708e720e2d63357e503df5ae8faaf56bfbd754e916ca3fff6f276d18578eeb3"
+  },
+  "id": "7djSuITOEWUFkj0f",
+  "tags": []
+}
