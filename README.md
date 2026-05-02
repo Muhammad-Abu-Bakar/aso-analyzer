@@ -171,7 +171,6 @@ What's built:
 - [x] Google Sheets archive
 
 What's next:
-- [ ] Competitor screenshot analysis (side-by-side visual comparison)
 - [ ] Anonymized AI input ("App A" vs "App B") to remove brand bias from vision scoring
 - [ ] Error workflow that captures every failure (Jina timeout, scrape fail, OpenAI rate limit, Gmail bounce) into a separate sheet
 - [ ] Per-run metrics logging (latency per node, token usage, total cost, success/fail)
