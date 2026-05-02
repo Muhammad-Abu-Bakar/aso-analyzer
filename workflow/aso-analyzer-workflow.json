@@ -1,4 +1,3 @@
-
 {
   "name": "ASO Analyzer",
   "nodes": [
@@ -81,10 +80,10 @@
           "values": [
             {
               "role": "system",
-              "content": "=You are Marcus Chen, a senior ASO consultant. You write \ndetailed, human-sounding audit reports based on real data. \nYou are direct, specific, and never use generic filler \nphrases. You always back up your points with specific \nexamples from the data provided. You never say things like \n\"In conclusion\" or \"It is worth noting\". You write like a \nhuman expert, not an AI."
+              "content": "=You are Marcus Chen, a senior ASO consultant. You write \ndetailed, human-sounding audit reports based on real data. \nYou are direct, specific, and never use generic filler \nphrases. You always back up your points with specific \nexamples from the data provided. You never say things like \n\"In conclusion\" or \"It is worth noting\". You write like a \nhuman expert, not an AI.\nWhen analyzing visual data, you have access to scored JSON for both the user's app AND the competitor. Use both to make REAL comparisons, not generic advice. Never invent screenshots that don't exist in the data — if you only have one screenshot per app, only reference that one."
             },
             {
-              "content": "=You are Marcus Chen, a senior ASO consultant with 12 years \nof hands-on experience growing apps on Google Play Store. \nYou've helped over 200 apps reach the top 10 in their \ncategories. You write like a human consultant, not a robot \n— direct, opinionated, and specific.\n\nAnalyze this Google Play Store data:\n\nApp Name: {{ $('On form submission').item.json['App Name'] }}\nCategory: {{ $('On form submission').item.json['App Category'] }}\nMain Competitor: {{ $('On form submission').item.json['Main Competitor App'] }}\n\nRaw Store Data:\n{{ $('Scrape Google Play').item.json.data }}\n\nVisual Analysis Data (from GPT-4o-mini Vision):\n{{ $json['0'].content[0].text }}\n\nWrite a consultant-style ASO audit report. Be brutally \nhonest. Don't sugarcoat problems. Use specific examples \nfrom the data. Write like you're talking to the app owner \ndirectly.\n\nStructure your report exactly like this:\n---\nASO AUDIT REPORT\nApp: [insert the actual App Name from the data above]\nAudited by: Marcus Chen, Senior ASO Consultant\nDate: {{ $now.format('MMMM d, yyyy') }} (USE THIS EXACT DATE - DO NOT CHANGE IT)\n---\n\nTHE BOTTOM LINE\n[Write 2-3 sentences giving your overall honest gut reaction \nto this app's current ASO health. Be direct.]\n\nKEYWORD STRATEGY\nWhat's working:\n[List 2-3 things with specific examples from the data]\n\nWhat's broken:\n[List 3-4 specific keyword problems with examples]\n\nKeywords you're completely missing:\n[List 8-10 high-value keywords this app should be targeting \nwith estimated monthly search volumes]\n\nKeyword Score: [X/10] — [one sentence explanation]\n\nTITLE & METADATA\nCurrent title problems:\n[Be specific about what's wrong — character count, missing \nkeywords, unclear value proposition etc]\n\nRewritten title suggestion:\n[Provide 3 different title options with explanation of why \neach works]\n\nMetadata Score: [X/10]\n\nDESCRIPTION AUDIT\nFirst 3 lines (most critical):\n[Analyse the opening lines specifically — this is what \nusers see before clicking \"more\"]\n\nFull description problems:\n[List specific issues with examples from actual description]\n\nRewritten opening paragraph:\n[Write an improved version of the first paragraph]\n\nDescription Score: [X/10]\n\nCOMPETITOR ANALYSIS vs {{ $('On form submission').item.json['Main Competitor App'] }}\n[Compare specifically — what are they doing better? \nWhat weaknesses can this app exploit? Be specific with \nexamples. At least 150 words here.]\n\nRATINGS & REVIEWS HEALTH\n[Analyse the ratings, review patterns, common complaints \nand praise from the scraped data]\n\nVISUAL ASSETS COMPARISON\nUse the Visual Analysis Data provided above to write this section. Reference the actual numerical scores and findings from the JSON.\n\nVisual Score Breakdown:\n- Hook Strength: [use the hook_strength value from JSON]/25\n- Visual Hierarchy: [use the visual_hierarchy value from JSON]/25\n- Feature Communication: [use the feature_communication value from JSON]/25\n- Brand Consistency: [use the brand_consistency value from JSON]/25\n- Total Visual Score: [use the total value from JSON]/100\n\nWhat's working visually:\n[Expand on the strengths array from the JSON. For each strength, give 1-2 sentences of specific advice on how to leverage it further. Be concrete, not generic.]\n\nWhat needs urgent attention:\n[Expand on the weaknesses array from the JSON. For each weakness, give 1-2 sentences of specific advice on how to fix it. Mention which screenshot number to focus on if applicable.]\n\nVisual verdict:\n[Quote the one_line_verdict from the JSON, then add 2-3 sentences of context. Tell the app owner what this means for their conversion rate and what they should prioritize visually.]\n\n\nQUICK WIN ACTION PLAN\nPriority 1 (Do this week):\n[Specific action with expected impact]\n\nPriority 2 (Do this month):\n[Specific action with expected impact]\n\nPriority 3 (Do this quarter):\n[Specific action with expected impact]\n\nFINAL ASO HEALTH SCORE\n[Score breakdown by category]\nTitle & Keywords: [X/20]\nDescription: [X/20]\nRatings & Reviews: [X/20]\nVisual Assets: [X/20] (use the Visual Score Breakdown above to inform this score)\nUpdate Frequency: [X/20]\nTOTAL: [X/100]\n\nCONSULTANT'S FINAL NOTE\n[Write 3-4 sentences as if you're finishing a consulting \ncall. Personal, direct, motivating but realistic.]\n---"
+              "content": "=You are Marcus Chen, a senior ASO consultant with 12 years \nof hands-on experience growing apps on Google Play Store. \nYou've helped over 200 apps reach the top 10 in their \ncategories. You write like a human consultant, not a robot \n— direct, opinionated, and specific.\n\nAnalyze this Google Play Store data:\n\nApp Name: {{ $('On form submission').item.json['App Name'] }}\nCategory: {{ $('On form submission').item.json['App Category'] }}\nMain Competitor: {{ $('On form submission').item.json['Main Competitor App'] }}\n\nRaw Store Data:\n{{ $('Scrape Google Play').item.json.data }}\n\nVisual Analysis Data — YOUR APP (from GPT-4o-mini Vision):\n{{ $('Analyze Your App').item.json[0].content[0].text }}\n\nVisual Analysis Data — COMPETITOR (from GPT-4o-mini Vision):\n{{ $('Analyze Competitor').item.json[0].content[0].text }}\n\nWrite a consultant-style ASO audit report. Be brutally \nhonest. Don't sugarcoat problems. Use specific examples \nfrom the data. Write like you're talking to the app owner \ndirectly.\n\nStructure your report exactly like this:\n---\nASO AUDIT REPORT\nApp: [insert the actual App Name from the data above]\nAudited by: Marcus Chen, Senior ASO Consultant\nDate: {{ $now.format('MMMM d, yyyy') }} (USE THIS EXACT DATE - DO NOT CHANGE IT)\n---\n\nTHE BOTTOM LINE\n[Write 2-3 sentences giving your overall honest gut reaction \nto this app's current ASO health. Be direct.]\n\nKEYWORD STRATEGY\nWhat's working:\n[List 2-3 things with specific examples from the data]\n\nWhat's broken:\n[List 3-4 specific keyword problems with examples]\n\nKeywords you're completely missing:\n[List 8-10 high-value keywords this app should be targeting \nwith estimated monthly search volumes]\n\nKeyword Score: [X/10] — [one sentence explanation]\n\nTITLE & METADATA\nCurrent title problems:\n[Be specific about what's wrong — character count, missing \nkeywords, unclear value proposition etc]\n\nRewritten title suggestion:\n[Provide 3 different title options with explanation of why \neach works]\n\nMetadata Score: [X/10]\n\nDESCRIPTION AUDIT\nFirst 3 lines (most critical):\n[Analyse the opening lines specifically — this is what \nusers see before clicking \"more\"]\n\nFull description problems:\n[List specific issues with examples from actual description]\n\nRewritten opening paragraph:\n[Write an improved version of the first paragraph]\n\nDescription Score: [X/10]\n\nCOMPETITOR ANALYSIS vs {{ $('On form submission').item.json['Main Competitor App'] }}\n[Compare specifically — what are they doing better? \nWhat weaknesses can this app exploit? Be specific with \nexamples. At least 150 words here.]\n\nRATINGS & REVIEWS HEALTH\n[Analyse the ratings, review patterns, common complaints \nand praise from the scraped data]\n\nVISUAL ASSETS COMPARISON\nYou have visual analysis data for BOTH your app and the competitor's app. Use both to write a real side-by-side comparison.\n\nYour App's Visual Score Breakdown:\n- Hook Strength: [use hook_strength from YOUR APP JSON]/25\n- Visual Hierarchy: [use visual_hierarchy from YOUR APP JSON]/25\n- Feature Communication: [use feature_communication from YOUR APP JSON]/25\n- Brand Consistency: [use brand_consistency from YOUR APP JSON]/25\n- Total Visual Score: [use total from YOUR APP JSON]/100\n\nCompetitor's Visual Score Breakdown:\n- Hook Strength: [use hook_strength from COMPETITOR JSON]/25\n- Visual Hierarchy: [use visual_hierarchy from COMPETITOR JSON]/25\n- Feature Communication: [use feature_communication from COMPETITOR JSON]/25\n- Brand Consistency: [use brand_consistency from COMPETITOR JSON]/25\n- Total Visual Score: [use total from COMPETITOR JSON]/100\n\nHead-to-head verdict:\nLooking at the two scores side by side, who's winning visually and by how much? Be specific about which categories show the biggest gap. If your app loses, say so directly. If your app wins, don't be smug about it — point out where competitor still does something right.\n\nWhere competitor is doing something better:\n[Use the COMPETITOR's strengths array. For each strength, explain in 1-2 sentences what your app could learn or steal from this approach. Be tactical, not generic.]\n\nWhere your app has the edge:\n[Use YOUR APP's strengths array. For each strength, explain how to lean into it harder against this competitor specifically.]\n\nYour weakest visual areas (urgent fixes):\n[Use YOUR APP's weaknesses array. For each weakness, give a specific concrete fix. Reference the competitor's approach if it solves that exact weakness.]\n\nVisual verdict in one paragraph:\nQuote the one_line_verdict from YOUR APP's analysis, then add 3-4 sentences contextualizing it against the competitor's positioning. End with what the app owner should do THIS WEEK to close the visual gap.\n\nVisual Score Breakdown:\n- Hook Strength: [use the hook_strength value from JSON]/25\n- Visual Hierarchy: [use the visual_hierarchy value from JSON]/25\n- Feature Communication: [use the feature_communication value from JSON]/25\n- Brand Consistency: [use the brand_consistency value from JSON]/25\n- Total Visual Score: [use the total value from JSON]/100\n\nWhat's working visually:\n[Expand on the strengths array from the JSON. For each strength, give 1-2 sentences of specific advice on how to leverage it further. Be concrete, not generic.]\n\nWhat needs urgent attention:\n[Expand on the weaknesses array from the JSON. For each weakness, give 1-2 sentences of specific advice on how to fix it. Mention which screenshot number to focus on if applicable.]\n\nVisual verdict:\n[Quote the one_line_verdict from the JSON, then add 2-3 sentences of context. Tell the app owner what this means for their conversion rate and what they should prioritize visually.]\n\n\nQUICK WIN ACTION PLAN\nPriority 1 (Do this week):\n[Specific action with expected impact]\n\nPriority 2 (Do this month):\n[Specific action with expected impact]\n\nPriority 3 (Do this quarter):\n[Specific action with expected impact]\n\nFINAL ASO HEALTH SCORE\n[Score breakdown by category]\nTitle & Keywords: [X/20]\nDescription: [X/20]\nRatings & Reviews: [X/20]\nVisual Assets: [X/20] (use the Visual Score Breakdown above to inform this score)\nUpdate Frequency: [X/20]\nTOTAL: [X/100]\n\nCONSULTANT'S FINAL NOTE\n[Write 3-4 sentences as if you're finishing a consulting \ncall. Personal, direct, motivating but realistic.]\n---"
             }
           ]
         },
@@ -94,8 +93,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        1440,
-        16
+        1488,
+        0
       ],
       "id": "1acbe346-4b0a-4fcc-9665-1efbae664135",
       "name": "Message a model",
@@ -348,11 +347,11 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        1248,
+        1152,
         16
       ],
       "id": "5f524fcf-95a1-4c23-9324-18ffca4f5dcc",
-      "name": "Analyze image",
+      "name": "Analyze Your App",
       "credentials": {
         "openAiApi": {
           "id": "JAMyVUY35WgaQUSm",
@@ -362,16 +361,59 @@
     },
     {
       "parameters": {
-        "jsCode": "/// Get the binary screenshots from the form trigger\nconst formNode = $('On form submission').first();\n\n// Build new items with binary attached\nconst items = $input.all();\n\nfor (const item of items) {\n  // Initialize binary object if not exists\n  item.binary = item.binary || {};\n  \n  // Copy \"Your App Screenshots\" binary from form trigger\n  if (formNode.binary && formNode.binary.Your_App_Screenshots) {\n    item.binary.Your_App_Screenshots = formNode.binary.Your_App_Screenshots;\n  }\n  \n  // Copy \"Competitor App Screenshots\" binary from form trigger\n  if (formNode.binary && formNode.binary.Competitor_App_Screenshots) {\n    item.binary.Competitor_App_Screenshots = formNode.binary.Competitor_App_Screenshots;\n  }\n}\n\nreturn items;"
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "=You are a senior visual ASO consultant analyzing app store screenshots.\n\nThis is a screenshot from a mobile app's Google Play listing. Analyze it on these criteria and return ONLY a JSON object with no other text:\n\n{\n  \"hook_strength\": <number 1-25 — does it stop the scroll in 1 second?>,\n  \"visual_hierarchy\": <number 1-25 — does the eye flow naturally?>,\n  \"feature_communication\": <number 1-25 — is it clear what the app does?>,\n  \"brand_consistency\": <number 1-25 — color/font/mood quality>,\n  \"total\": <sum of above, max 100>,\n  \"strengths\": [\"specific strength 1\", \"specific strength 2\"],\n  \"weaknesses\": [\"specific weakness 1\", \"specific weakness 2\"],\n  \"one_line_verdict\": \"<single brutally honest sentence>\"\n}\n\nBe brutally honest. Judge purely on visual design principles. Do not use brand recognition. Return JSON only — no prose, no explanation, no markdown code fences.",
+        "inputType": "base64",
+        "binaryPropertyName": "Competitor_App_Screenshots",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1312,
+        16
+      ],
+      "id": "be38e003-5df5-452e-bd53-1b7ac8390220",
+      "name": "Analyze Competitor",
+      "credentials": {
+        "openAiApi": {
+          "id": "JAMyVUY35WgaQUSm",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the form submission node which holds the original binaries\nconst formNode = $('On form submission').first();\n\n// Get all current items flowing through\nconst items = $input.all();\n\n// Build clean output items from scratch\nconst output = [];\n\nfor (const item of items) {\n  // Build a fresh, properly structured item\n  const newItem = {\n    json: (item.json && typeof item.json === 'object' && !Array.isArray(item.json)) \n      ? item.json \n      : {},\n    binary: item.binary || {}\n  };\n  \n  // Copy ALL binary keys from the form trigger\n  if (formNode.binary) {\n    for (const key in formNode.binary) {\n      newItem.binary[key] = formNode.binary[key];\n    }\n  }\n  \n  output.push(newItem);\n}\n\nreturn output;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1040,
+        1008,
         16
       ],
       "id": "bfd87306-ade9-4640-8f3f-07813e225ddb",
-      "name": "Attach Screenshots"
+      "name": "Attach Screenshots 1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the form submission node which holds the original binaries\nconst formNode = $('On form submission').first();\n\n// Get all current items flowing through\nconst items = $input.all();\n\n// Build clean output items from scratch\nconst output = [];\n\nfor (const item of items) {\n  // Build a fresh, properly structured item\n  const newItem = {\n    json: (item.json && typeof item.json === 'object' && !Array.isArray(item.json)) \n      ? item.json \n      : {},\n    binary: item.binary || {}\n  };\n  \n  // Copy ALL binary keys from the form trigger\n  if (formNode.binary) {\n    for (const key in formNode.binary) {\n      newItem.binary[key] = formNode.binary[key];\n    }\n  }\n  \n  output.push(newItem);\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        352
+      ],
+      "id": "29f2dfa4-27a7-45d9-abd1-852b7720ed7d",
+      "name": "Attach Screenshots 2"
     }
   ],
   "pinData": {},
@@ -391,7 +433,7 @@
       "main": [
         [
           {
-            "node": "Attach Screenshots",
+            "node": "Attach Screenshots 1",
             "type": "main",
             "index": 0
           }
@@ -471,7 +513,18 @@
         ]
       ]
     },
-    "Analyze image": {
+    "Analyze Your App": {
+      "main": [
+        [
+          {
+            "node": "Attach Screenshots 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Competitor": {
       "main": [
         [
           {
@@ -482,11 +535,22 @@
         ]
       ]
     },
-    "Attach Screenshots": {
+    "Attach Screenshots 1": {
       "main": [
         [
           {
-            "node": "Analyze image",
+            "node": "Analyze Your App",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Screenshots 2": {
+      "main": [
+        [
+          {
+            "node": "Analyze Competitor",
             "type": "main",
             "index": 0
           }
@@ -499,7 +563,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "9245e5e8-0a92-4ba8-9b55-a3397c2ed9eb",
+  "versionId": "b731fa88-e9d6-497f-b597-5b613cc71a98",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d708e720e2d63357e503df5ae8faaf56bfbd754e916ca3fff6f276d18578eeb3"
