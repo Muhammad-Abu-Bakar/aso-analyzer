@@ -169,6 +169,7 @@ What's built:
 - [x] Markdown → HTML email delivery
 - [x] Date hallucination fix
 - [x] Google Sheets archive
+- [x] Competitor screenshot analysis (side-by-side visual comparison)
 
 What's next:
 - [ ] Anonymized AI input ("App A" vs "App B") to remove brand bias from vision scoring
