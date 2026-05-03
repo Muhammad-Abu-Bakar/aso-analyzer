@@ -1,9 +1,9 @@
 # ASO Analyzer
 
-> **App owners spend $200–500/hour on ASO consultants for audits that take 2 hours.** 
+> **App owners spend $200–500/hour on ASO consultants for audits that take 2 hours.**
 > This workflow delivers a comparable audit in 90 seconds for under $0.05 in API costs.
 
-An end-to-end automation that takes any app from the Google Play Store, scrapes its listing, analyzes its screenshots with AI vision, and emails the user a professional ASO consulting report — written in the voice of "Marcus Chen, Senior ASO Consultant."
+An end-to-end automation that takes any app from the Google Play Store, scrapes its listing, validates and analyzes its screenshots with AI vision (both yours and a competitor's), and emails the user a professional ASO consulting report — written in the voice of "Marcus Chen, Senior ASO Consultant."
 
 Built with n8n, OpenAI (text + vision), Jina AI, Google Sheets, and Gmail. No code beyond a small data-passthrough function.
 
@@ -11,7 +11,7 @@ Built with n8n, OpenAI (text + vision), Jina AI, Google Sheets, and Gmail. No co
 
 ## What it does
 
-A user fills out a 6-field form. 90 seconds later, they have a 1,500-word ASO audit in their inbox covering keyword strategy, title and metadata, description quality, competitor positioning, ratings analysis, visual asset comparison, and a prioritized action plan with health scores out of 100.
+A user fills out a form (app name, category, competitor, email, plus screenshots from their app and the competitor's app). 90 seconds later, they have a 1,500-word ASO audit in their inbox covering keyword strategy, title and metadata, description quality, competitor positioning, ratings analysis, side-by-side visual asset comparison, and a prioritized action plan with health scores out of 100.
 
 ```
 User submits form  →  Audit arrives in inbox  →  Backup saved to Google Sheets
@@ -20,42 +20,56 @@ User submits form  →  Audit arrives in inbox  →  Backup saved to Google Shee
 
 ## Sample output
 
-A real audit Marcus Chen wrote for Spotify (compared against SoundCloud):
+A real audit Marcus Chen wrote for YouTube (compared against SoundCloud):
 
 ```
 ASO AUDIT REPORT
-App: Spotify
+App: YouTube
 Audited by: Marcus Chen, Senior ASO Consultant
-Date: May 1, 2026
+Date: May 3, 2026
 ---
 
 THE BOTTOM LINE
-Spotify's ASO health is currently mediocre, primarily hindered by
-keyword strategy and visual clutter. Improvements are necessary to
-boost visibility and conversion rates.
+YouTube's current ASO health is mediocre, primarily hindered by text
+visibility and organization in visual assets. Your app catches the
+eye but struggles to communicate its value effectively, leading to
+potential loss of user engagement.
 
 KEYWORD STRATEGY
 What's working:
-- Brand Recognition: Spotify has strong brand recognition...
-- Competitor Comparison: Effectively positioning against SoundCloud...
+- Brand Recognition: The app name "YouTube" alone carries significant
+  weight due to its established brand presence
+- Targeted Keywords: Effective targeting of "music video" trends
 
 What's broken:
-- Limited Keyword Variety: Overly focused on generic terms like "music"
-  without long-tail keywords like "music streaming" or "music discovery"
-- Missing User Intent: "playlist maker" or "offline music" aren't being utilized
-- Lack of Locale Optimization: No keyword diversity for international users
+- Lack of Long-tail Keywords: Missing niche keywords like "live music
+  streaming" or "music video editor"
+- Absence of Localization: No evidence of multi-language keyword targeting
+- Inconsistent Keyword Density: "streaming" appears sparse in metadata
 
-Keywords you're completely missing:
-- "Music streaming app" (5,000 searches)
-- "Podcast player" (3,600 searches)
-- "Offline music player" (2,900 searches)
-[...8 more]
+[...]
 
-Keyword Score: 4/10
+VISUAL ASSETS COMPARISON
+Your App's Visual Score Breakdown:
+- Hook Strength: 15/25
+- Visual Hierarchy: 20/25
+- Feature Communication: 18/25
+- Brand Consistency: 22/25
+- Total Visual Score: 75/100
 
-[full report continues with title rewrites, description audit,
-competitor analysis, ratings breakdown, visual scoring,
-3-tier action plan, and final 100-point health score]
+Competitor's Visual Score Breakdown:
+- Hook Strength: 18/25
+- Visual Hierarchy: 20/25
+- Feature Communication: 22/25
+- Brand Consistency: 21/25
+- Total Visual Score: 81/100
+
+Head-to-head verdict:
+Competitor SoundCloud is winning by 6 points. The biggest gaps appear
+in hook strength and feature communication, where SoundCloud effectively
+utilizes striking visuals to guide users.
+
+[full report continues with action plan and 100-point health score]
 ```
 
 Full sample reports are in the [`/samples`](./samples) directory.
@@ -70,6 +84,7 @@ This tool brings the cost down to roughly $0.05 per audit and the turnaround dow
 
 ## How it works
 
+```
 On form submission  ──▶  Check App Exists (Jina)  ──▶  App Exists?
                                                             │
                                             (false)─────────┤
@@ -123,8 +138,11 @@ On form submission  ──▶  Check App Exists (Jina)  ──▶  App Exists?
                                                             ▼
                                                        Form Ending
                                                        (success)
+```
 
-Eleven nodes total. Each node has a single responsibility. Failures at any step are isolated to that step (no cascading silent failures — see the error workflow below).
+Fourteen nodes total. Each node has a single responsibility. Failures at any step are isolated to that step.
+
+The three "Attach Screenshots" Code nodes exist because n8n's OpenAI vision nodes consume binary attachments but don't pass them downstream. Each small Code node re-attaches the original screenshots from the form trigger so the next vision call has access to them. This is a known n8n pattern, not over-engineering — it's the cleanest way to chain multiple vision analyses on the same input.
 
 ## The interesting parts
 
@@ -132,11 +150,13 @@ A few design decisions worth calling out, because they came from real iteration:
 
 **Anti-hallucination on dates.** GPT-4o-mini was confidently writing "Date: October 2023" in every report because that's near its training cutoff. The fix wasn't more prompting — it was injecting `{{ $now.format('MMMM d, yyyy') }}` directly into the user prompt and adding an explicit instruction to use that exact value. Date-fabrication dropped to zero.
 
-**Two-stage AI for cost control.** A single GPT-4o-mini call could do everything, but separating visual analysis (`Analyze image` → structured JSON) from report writing (`Message a model` → narrative) lets each prompt be tightly scoped. Visual analysis costs ~$0.002. Report writing costs ~$0.03. Total per audit: roughly $0.04 — and either stage can be swapped for a stronger model independently.
+**Two-stage AI for cost control.** A single GPT-4o-mini call could do everything, but separating visual analysis (`Analyze image` → structured JSON) from report writing (`Message a model` → narrative) lets each prompt be tightly scoped. Visual analysis costs ~$0.002 per call. Report writing costs ~$0.03. Total per audit: roughly $0.045 — and either stage can be swapped for a stronger model independently.
+
+**Screenshot validation before analysis.** Without validation, a user uploading the wrong screenshot for the named app would get a confidently-generated but worthless audit. A separate vision call verifies the uploaded screenshot actually matches the named app before the main analysis runs. Mismatches branch to an error form ending instead of wasting API calls and confusing the user.
 
 **Markdown-to-HTML conversion before Gmail.** Marcus Chen writes in Markdown (`## Heading`, `**bold**`). Sending that to Gmail in HTML mode shows literal asterisks and hashes. A dedicated Markdown node converts it to clean HTML that Gmail renders properly. Small step, dramatic visual difference.
 
-**Binary data passthrough via Code node.** n8n's HTTP Request nodes (used for Jina scraping) strip binary attachments by default. The user's uploaded screenshots get lost between the form trigger and the Analyze image node. A small Code node explicitly re-attaches the binaries from the form trigger onto the current item before the vision step. Took two hours to debug, ten lines of JavaScript to fix.
+**Binary data passthrough via Code nodes.** n8n's HTTP Request and OpenAI vision nodes both strip binary attachments by default. The user's uploaded screenshots get lost between nodes that don't preserve binary data. Three small Code nodes explicitly re-attach the binaries from the form trigger onto the current item before each vision step. Took two hours to debug, ten lines of JavaScript to fix.
 
 ## Tech stack
 
@@ -145,8 +165,9 @@ A few design decisions worth calling out, because they came from real iteration:
 | Workflow engine | n8n (cloud) | Orchestration, form, sheets, gmail |
 | App existence check | Jina AI Reader | Validates app is on Google Play |
 | Scraping | Jina AI Reader | Extracts Google Play listing as Markdown |
+| Screenshot validation | OpenAI GPT-4o-mini Vision | Verifies upload matches named app |
+| Visual analysis | OpenAI GPT-4o-mini Vision | Scores screenshots, returns structured JSON |
 | Text generation | OpenAI GPT-4o-mini | Marcus Chen's audit report |
-| Vision | OpenAI GPT-4o-mini Vision | Screenshot analysis with structured JSON output |
 | Storage | Google Sheets | Audit log + raw report archive |
 | Delivery | Gmail (OAuth2) | HTML-formatted email to user |
 
@@ -156,12 +177,14 @@ A few design decisions worth calling out, because they came from real iteration:
 |---|---|---|
 | Check app exists | Jina Reader | Free tier |
 | Scrape Google Play | Jina Reader | Free tier |
-| Analyze screenshot | GPT-4o-mini Vision | ~$0.002 |
+| Verify screenshot match | GPT-4o-mini Vision | ~$0.002 |
+| Analyze your app's screenshot | GPT-4o-mini Vision | ~$0.002 |
+| Analyze competitor's screenshot | GPT-4o-mini Vision | ~$0.002 |
 | Generate report | GPT-4o-mini | ~$0.03 |
 | Sheets + Gmail | Google APIs | Free |
-| **Total** | | **~$0.04** |
+| **Total** | | **~$0.045** |
 
-For a $5 OpenAI credit, that's ~125 audits.
+For a $5 OpenAI credit, that's ~110 audits.
 
 ## Setup
 
@@ -177,13 +200,11 @@ For a $5 OpenAI credit, that's ~125 audits.
 3. Create a Google Sheet titled "ASO Reports" with these columns: `App Name`, `Category`, `Competitor`, `Date`, `ASO Report`
 4. Update the `Append row in sheet` node to point to your sheet
 5. Activate the workflow
-6. Open the form URL from the trigger node and submit a test
-
-The full setup guide with screenshots is in [`/docs/SETUP.md`](./docs/SETUP.md).
+6. Open the form URL from the trigger node and submit a test (you'll need a real Google Play app name plus at least one screenshot from your app and one from a competitor)
 
 ## Roadmap
 
-What's built:
+**What's built:**
 - [x] Form-triggered workflow with validation
 - [x] Google Play scraping via Jina
 - [x] Marcus Chen text audit (GPT-4o-mini)
@@ -195,41 +216,37 @@ What's built:
 - [x] Competitor screenshot analysis (side-by-side visual comparison)
 - [x] AI-powered screenshot validation (rejects mismatched uploads before analysis)
 
-What's next:
+**What's next:**
+- [ ] FlutterFlow mobile app frontend
 - [ ] Anonymized AI input ("App A" vs "App B") to remove brand bias from vision scoring
-- [ ] Error workflow that captures every failure (Jina timeout, scrape fail, OpenAI rate limit, Gmail bounce) into a separate sheet
+- [ ] Reviews scraper for deeper Ratings & Reviews analysis
+- [ ] Keyword research API integration for real search volumes
+- [ ] Multi-image analysis (full screenshot sequence, not just one per app)
+- [ ] Error workflow capturing failures (Jina timeout, scrape fail, OpenAI rate limit, Gmail bounce) into a separate sheet
 - [ ] Per-run metrics logging (latency per node, token usage, total cost, success/fail)
 - [ ] Versioned prompts in repo (Marcus Chen v1, v2, v3 with changelog)
 - [ ] PDF export option for users who want a downloadable deliverable
-- [ ] Self-hosted image comparison rendering (move from text-only email to visual side-by-side comparison)
-- [ ] FlutterFlow mobile app frontend
-   - [ ] Reviews scraper for deeper Ratings & Reviews analysis
-   - [ ] Keyword research API integration for real search volumes
-   - [ ] Anonymized "App A vs App B" prompts to remove brand bias
-   - [ ] Error workflow capturing failures to separate sheet
-   - [ ] Per-run metrics logging (latency, tokens, cost)
+- [ ] Self-hosted image comparison rendering (visual side-by-side instead of text-only)
 
 ## Known limitations
 
 A few things this tool does NOT do well, in the spirit of honesty:
 
-- **Brand bias in vision scoring.** GPT-4o-mini sometimes scores recognizable brands more generously than indie apps with objectively better screenshots. The roadmap item on anonymization addresses this.
-- **One screenshot at a time.** The current vision step analyzes a single screenshot per app. Real ASO is about the whole screenshot sequence (storytelling across slides). Multi-image analysis is on the roadmap.
+- **Brand bias in vision scoring.** GPT-4o-mini scores well-known apps more generously than indie apps with objectively better screenshots. The roadmap item on anonymized "App A vs App B" prompts addresses this by hiding brand identity until after scoring is complete.
+
+- **Shallow reviews analysis.** Jina's scrape returns the Play Store listing page summary but not the full review pool. The Ratings & Reviews section partially infers from limited data. A dedicated reviews scraper is on the roadmap.
+
+- **Keyword search volumes are AI estimates.** GPT-4o-mini doesn't have access to real keyword research databases. Volume numbers like "5K monthly searches" are pattern-matched guesses, not verified data. Integrating an ASO keyword API (AppFollow, App Annie) is on the roadmap.
+
+- **One screenshot per app.** The current workflow analyzes a single screenshot per side. Real ASO is about the full sequence (storytelling across all slides). Multi-image analysis is on the roadmap.
+
 - **Hallucinated screenshot references.** When given one screenshot, the AI sometimes writes "Screenshot 3" or "Screenshot 4" in the analysis — it pattern-matches to what an audit "should look like." Strict prompt instructions reduce this but don't eliminate it.
+
+- **Validation false positives.** The screenshot match check can occasionally reject legitimate uploads of indie apps the AI doesn't recognize. The prompt errs on the side of leniency, but it's not perfect.
+
 - **No multi-language support.** Reports are English-only.
+
 - **Free-tier rate limits.** Jina's free tier handles testing fine, but a high-traffic deployment would need paid tiers.
-- - **Shallow reviews analysis.** Jina's scrape returns the Play Store listing 
-  page summary but not the full review pool. The Ratings & Reviews section 
-  partially infers from limited data. A dedicated reviews scraper is on the 
-  roadmap.
-- **Keyword search volumes are AI estimates.** GPT-4o-mini doesn't have 
-  access to real keyword research databases. Volume numbers like "5K monthly 
-  searches" are pattern-matched guesses, not verified data. Integrating an 
-  ASO keyword API (AppFollow, App Annie) is on the roadmap.
-- **Brand bias in vision scoring.** GPT-4o-mini scores well-known apps more 
-  generously than indie apps with objectively better screenshots. The 
-  anonymized "App A vs App B" approach (on the roadmap) addresses this by 
-  hiding brand identity until after scoring is complete.
 
 ## About this project
 
@@ -238,8 +255,9 @@ I'm Muhammad Abubakar — I built this while learning n8n. It started as a "let 
 Most of the lessons came from things breaking:
 - Gmail showed raw markdown asterisks until I added the Markdown-to-HTML conversion
 - The AI invented dates from 2023 until I forced today's date into the prompt
-- Vision analysis returned `binary not found` errors until I figured out that HTTP Request nodes drop attachments
-- Marcus Chen wrote with em-dashes everywhere until I prompted explicitly for em-dash-free output
+- Vision analysis returned `binary not found` errors until I figured out that HTTP Request and OpenAI vision nodes both drop binary attachments
+- The first competitor analysis report had duplicated visual sections because the prompt template still had old single-app instructions alongside the new comparison logic
+- Adding screenshot validation broke the existing chain because it consumed binaries without re-attaching them — needed a third Code node
 
 Every node in this workflow exists because something failed and I had to add it. That's the most honest summary of the project.
 
@@ -249,6 +267,6 @@ MIT — do whatever you want with this. If you use it commercially and it makes 
 
 ## Contact
 
-- GitHub: Muhammad-Abu-Bakar
+- GitHub: [Muhammad-Abu-Bakar](https://github.com/Muhammad-Abu-Bakar)
 - Email: abubakarg28@gmail.com
-- LinkedIn: www.linkedin.com/in/muhammad-abubakar-b37967115
+- LinkedIn: [muhammad-abubakar](https://www.linkedin.com/in/muhammad-abubakar-b37967115)
