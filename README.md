@@ -1,6 +1,6 @@
 # ASO Analyzer
 
-> **App owners spend $200–500/hour on ASO consultants for audits that take 2 hours.**
+> **App owners spend $200–500/hour on ASO consultants for audits that take 2 hours.** 
 > This workflow delivers a comparable audit in 90 seconds for under $0.05 in API costs.
 
 An end-to-end automation that takes any app from the Google Play Store, scrapes its listing, analyzes its screenshots with AI vision, and emails the user a professional ASO consulting report — written in the voice of "Marcus Chen, Senior ASO Consultant."
