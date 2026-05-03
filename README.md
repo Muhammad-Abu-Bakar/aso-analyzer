@@ -170,6 +170,7 @@ What's built:
 - [x] Date hallucination fix
 - [x] Google Sheets archive
 - [x] Competitor screenshot analysis (side-by-side visual comparison)
+- [x] AI-powered screenshot validation (rejects mismatched uploads before analysis)
 
 What's next:
 - [ ] Anonymized AI input ("App A" vs "App B") to remove brand bias from vision scoring
@@ -178,6 +179,12 @@ What's next:
 - [ ] Versioned prompts in repo (Marcus Chen v1, v2, v3 with changelog)
 - [ ] PDF export option for users who want a downloadable deliverable
 - [ ] Self-hosted image comparison rendering (move from text-only email to visual side-by-side comparison)
+- [ ] FlutterFlow mobile app frontend
+   - [ ] Reviews scraper for deeper Ratings & Reviews analysis
+   - [ ] Keyword research API integration for real search volumes
+   - [ ] Anonymized "App A vs App B" prompts to remove brand bias
+   - [ ] Error workflow capturing failures to separate sheet
+   - [ ] Per-run metrics logging (latency, tokens, cost)
 
 ## Known limitations
 
