@@ -70,7 +70,6 @@ This tool brings the cost down to roughly $0.05 per audit and the turnaround dow
 
 ## How it works
 
-```
 On form submission  ──▶  Check App Exists (Jina)  ──▶  App Exists?
                                                             │
                                             (false)─────────┤
@@ -79,14 +78,38 @@ On form submission  ──▶  Check App Exists (Jina)  ──▶  App Exists?
                                           Form Ending   Scrape Google Play (Jina)
                                                             │
                                                             ▼
-                                                      Attach Screenshots
+                                                  Attach Screenshots 1
+                                                  (re-attach binaries)
                                                             │
                                                             ▼
-                                                  Analyze image (GPT-4o-mini Vision)
+                                                  Verify App Match
+                                                  (GPT-4o-mini Vision)
                                                             │
                                                             ▼
-                                                  Message a model (GPT-4o-mini)
+                                                       Match?
+                                                            │
+                                            (false)─────────┤
+                                                │           │ (true)
+                                                ▼           ▼
+                                          Form Ending   Attach Screenshots 3
+                                          (validation    (re-attach binaries)
+                                           failed)              │
+                                                                ▼
+                                                  Analyze Your App
+                                                  (GPT-4o-mini Vision)
+                                                            │
+                                                            ▼
+                                                  Attach Screenshots 2
+                                                  (re-attach binaries)
+                                                            │
+                                                            ▼
+                                                  Analyze Competitor
+                                                  (GPT-4o-mini Vision)
+                                                            │
+                                                            ▼
+                                                  Message a model
                                                   "You are Marcus Chen..."
+                                                  (text + both visual JSONs)
                                                             │
                                                             ▼
                                                   Append row to Google Sheet
@@ -99,7 +122,7 @@ On form submission  ──▶  Check App Exists (Jina)  ──▶  App Exists?
                                                             │
                                                             ▼
                                                        Form Ending
-```
+                                                       (success)
 
 Eleven nodes total. Each node has a single responsibility. Failures at any step are isolated to that step (no cascading silent failures — see the error workflow below).
 
