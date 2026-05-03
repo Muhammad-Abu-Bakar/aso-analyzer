@@ -195,6 +195,18 @@ A few things this tool does NOT do well, in the spirit of honesty:
 - **Hallucinated screenshot references.** When given one screenshot, the AI sometimes writes "Screenshot 3" or "Screenshot 4" in the analysis — it pattern-matches to what an audit "should look like." Strict prompt instructions reduce this but don't eliminate it.
 - **No multi-language support.** Reports are English-only.
 - **Free-tier rate limits.** Jina's free tier handles testing fine, but a high-traffic deployment would need paid tiers.
+- - **Shallow reviews analysis.** Jina's scrape returns the Play Store listing 
+  page summary but not the full review pool. The Ratings & Reviews section 
+  partially infers from limited data. A dedicated reviews scraper is on the 
+  roadmap.
+- **Keyword search volumes are AI estimates.** GPT-4o-mini doesn't have 
+  access to real keyword research databases. Volume numbers like "5K monthly 
+  searches" are pattern-matched guesses, not verified data. Integrating an 
+  ASO keyword API (AppFollow, App Annie) is on the roadmap.
+- **Brand bias in vision scoring.** GPT-4o-mini scores well-known apps more 
+  generously than indie apps with objectively better screenshots. The 
+  anonymized "App A vs App B" approach (on the roadmap) addresses this by 
+  hiding brand identity until after scoring is complete.
 
 ## About this project
 
