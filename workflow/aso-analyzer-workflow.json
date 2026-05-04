@@ -457,6 +457,23 @@
       ],
       "id": "ee0f850d-0798-4066-a08f-661dbb440087",
       "name": "Attach Screenshots 3"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "aso-analyze",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -192,
+        624
+      ],
+      "id": "bbd450e9-6c9d-48e2-9297-c564c3663325",
+      "name": "Webhook",
+      "webhookId": "0db74a94-2864-4549-bfdc-4acb828bab5a"
     }
   ],
   "pinData": {},
@@ -628,7 +645,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "27531ee4-f5cf-4c72-b33e-d2ca91452930",
+  "versionId": "07ca48de-0976-45ba-9f78-27bfd89ef260",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d708e720e2d63357e503df5ae8faaf56bfbd754e916ca3fff6f276d18578eeb3"
