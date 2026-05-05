@@ -1,3 +1,24 @@
+## Workflow Versions
+
+This repo contains two versions of the ASO Analyzer:
+
+- **`workflows/aso-analyzer-form.json`** — Original form-trigger version. Users submit via n8n's built-in form and receive results via email.
+- **`workflows/aso-analyzer-webhook.json`** — Webhook version designed for integration with custom frontends (e.g., FlutterFlow). Accepts multipart/form-data POST requests and returns a structured JSON response with the audit report and visual analysis scores.
+
+### Webhook API
+
+**Endpoint:** `POST /webhook/aso-analyze-webhook`  
+**Content-Type:** `multipart/form-data`
+
+**Fields:**
+- `appName` (text) — Your app's name on Google Play
+- `category` (text) — App category
+- `competitor` (text) — Main competitor app name
+- `email` (text) — Recipient for the email report
+- `Your_App_Screenshots` (file) — Screenshot of your app's listing
+- `Competitor_App_Screenshots` (file) — Screenshot of competitor's listing
+
+**Response:** JSON object with `status`, `audit_report`, `your_app_visual`, `competitor_visual`, `email_sent`, and `email_id` fields.
 # ASO Analyzer
 
 > **App owners spend $200–500/hour on ASO consultants for audits that take 2 hours.**
