@@ -4,7 +4,7 @@
 
 🔗 **[Try it live →](https://muhammad-abu-bakar.github.io/aso-analyzer/)**
 
-![ASO Analyzer screenshot](docs/screenshot.png)
+![ASO Analyzer screenshot](screenshot.png)
 
 ---
 
