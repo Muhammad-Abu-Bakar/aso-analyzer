@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASO Analyzer — Audit any Google Play app in 60 seconds</title>
+  <meta name="description" content="Automated ASO audit for Google Play apps. Compares your app to a competitor, scores screenshots with vision AI, and emails a prioritized action plan." />
+
+  <!-- Open Graph (LinkedIn, Facebook, Slack, Discord previews) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://muhammad-abu-bakar.github.io/aso-analyzer/" />
+  <meta property="og:title" content="ASO Analyzer — Audit any Google Play app in 60 seconds" />
+  <meta property="og:description" content="Automated ASO audit for Google Play apps. Vision AI scoring, competitor comparison, prioritized action plan delivered to your inbox." />
+  <meta property="og:image" content="https://muhammad-abu-bakar.github.io/aso-analyzer/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ASO Analyzer — Audit any Google Play app in 60 seconds" />
+  <meta name="twitter:description" content="Automated ASO audit for Google Play apps. Vision AI scoring, competitor comparison, prioritized action plan delivered to your inbox." />
+  <meta name="twitter:image" content="https://muhammad-abu-bakar.github.io/aso-analyzer/og-image.png" />
+
+  <!-- Favicon (data URI emoji - no separate file needed) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .audit-content { white-space: pre-wrap; word-wrap: break-word; }
+    .audit-content h1, .audit-content h2, .audit-content h3 { font-weight: 700; margin-top: 1em; margin-bottom: 0.5em; color: #0f172a; }
+    .audit-content h1 { font-size: 1.5em; }
+    .audit-content h2 { font-size: 1.25em; }
+    .audit-content h3 { font-size: 1.1em; }
+    .audit-content strong { font-weight: 600; }
+    .audit-content ul, .audit-content ol { padding-left: 1.5em; margin: 0.5em 0; }
+    .audit-content li { margin: 0.25em 0; }
+    .dot { animation: bounce 1.4s infinite ease-in-out both; }
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-slate-800">
+  <div class="max-w-3xl mx-auto px-4 py-10 sm:py-16">
+    <!-- Header -->
+    <header class="mb-10 text-center">
+      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">ASO Analyzer</h1>
+      <p class="mt-2 text-slate-600">Audit your Google Play app against a competitor in ~30–60 seconds.</p>
+    </header>
+
+    <!-- Form view -->
+    <section id="form-view" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+      <form id="aso-form" class="space-y-5">
+        <div>
+          <label for="appName" class="block text-sm font-medium text-slate-700 mb-1.5">Your app name</label>
+          <input id="appName" name="appName" type="text" required
+                 placeholder="e.g. Marcus Chen Photography"
+                 class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label for="category" class="block text-sm font-medium text-slate-700 mb-1.5">Category</label>
+          <input id="category" name="category" type="text" required
+                 placeholder="e.g. Education, Photography"
+                 class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label for="competitor" class="block text-sm font-medium text-slate-700 mb-1.5">Competitor app name</label>
+          <input id="competitor" name="competitor" type="text" required
+                 placeholder="e.g. ProCam"
+                 class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">Your email</label>
+          <input id="email" name="email" type="email" required
+                 placeholder="you@example.com"
+                 class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+          <p class="mt-1 text-xs text-slate-500">The full audit report will be emailed here.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="yourScreens" class="block text-sm font-medium text-slate-700 mb-1.5">Your app screenshots</label>
+            <input id="yourScreens" name="yourScreens" type="file" multiple accept="image/*" required
+                   class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
+            <p id="yourScreensCount" class="mt-1 text-xs text-slate-500">Select 2+ screenshots</p>
+          </div>
+          <div>
+            <label for="competitorScreens" class="block text-sm font-medium text-slate-700 mb-1.5">Competitor screenshots</label>
+            <input id="competitorScreens" name="competitorScreens" type="file" multiple accept="image/*" required
+                   class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
+            <p id="competitorScreensCount" class="mt-1 text-xs text-slate-500">Select 2+ screenshots</p>
+          </div>
+        </div>
+
+        <button id="submit-btn" type="submit"
+                class="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg px-4 py-3 transition shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          Run audit
+        </button>
+      </form>
+    </section>
+
+    <!-- Loading view -->
+    <section id="loading-view" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-10 text-center fade-in">
+      <div class="flex justify-center gap-2 mb-6">
+        <span class="dot block w-3 h-3 bg-indigo-600 rounded-full"></span>
+        <span class="dot block w-3 h-3 bg-indigo-600 rounded-full"></span>
+        <span class="dot block w-3 h-3 bg-indigo-600 rounded-full"></span>
+      </div>
+      <h2 class="text-xl font-semibold text-slate-900">Running audit…</h2>
+      <p class="mt-2 text-slate-600">This usually takes 30–60 seconds. We're scraping the store, analyzing screenshots, and writing the report.</p>
+      <p id="loading-elapsed" class="mt-4 text-sm text-slate-400">Elapsed: 0s</p>
+    </section>
+
+    <!-- Error view -->
+    <section id="error-view" class="hidden bg-white rounded-2xl shadow-sm border border-rose-200 p-6 sm:p-8 fade-in">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center">
+          <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <div class="flex-1">
+          <h2 id="error-title" class="text-lg font-semibold text-slate-900">Something went wrong</h2>
+          <p id="error-message" class="mt-1 text-slate-600"></p>
+          <button id="error-retry" class="mt-4 text-sm font-semibold text-indigo-600 hover:text-indigo-700">← Try again</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Success view -->
+    <section id="success-view" class="hidden space-y-6 fade-in">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span class="text-xs font-medium text-emerald-700 uppercase tracking-wide">Audit complete</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900" id="result-app-name"></h2>
+            <p class="text-slate-600 mt-1">vs <span id="result-competitor"></span></p>
+          </div>
+          <div id="email-status" class="text-sm text-slate-500"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="your-visual-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"></div>
+        <div id="competitor-visual-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"></div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+        <h3 class="text-lg font-semibold text-slate-900 mb-4">Full audit report</h3>
+        <div id="audit-report" class="audit-content text-sm text-slate-700 leading-relaxed"></div>
+      </div>
+
+      <button id="success-restart" class="w-full bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold rounded-lg px-4 py-3 transition">
+        Run another audit
+      </button>
+    </section>
+
+    <footer class="mt-10 text-center text-xs text-slate-400">
+      <p>Powered by n8n · <a href="https://github.com/Muhammad-Abu-Bakar/aso-analyzer" class="hover:text-slate-600 underline" target="_blank" rel="noopener">View source</a></p>
+    </footer>
+  </div>
+
+  <script>
+    const WEBHOOK_URL = 'https://fallen282.app.n8n.cloud/webhook/aso-analyze-webhook';
+
+    const views = {
+      form: document.getElementById('form-view'),
+      loading: document.getElementById('loading-view'),
+      error: document.getElementById('error-view'),
+      success: document.getElementById('success-view'),
+    };
+
+    function show(viewName) {
+      Object.entries(views).forEach(([name, el]) => {
+        el.classList.toggle('hidden', name !== viewName);
+      });
+    }
+
+    // Title-case a string: capitalize first letter of each word
+    function titleCase(str) {
+      if (!str) return '';
+      return String(str).replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function bindFileCounter(inputId, counterId) {
+      const input = document.getElementById(inputId);
+      const counter = document.getElementById(counterId);
+      input.addEventListener('change', () => {
+        const n = input.files.length;
+        counter.textContent = n === 0 ? 'Select 2+ screenshots' : `${n} file${n === 1 ? '' : 's'} selected`;
+        counter.className = n === 0 ? 'mt-1 text-xs text-slate-500' : 'mt-1 text-xs text-emerald-600 font-medium';
+      });
+    }
+    bindFileCounter('yourScreens', 'yourScreensCount');
+    bindFileCounter('competitorScreens', 'competitorScreensCount');
+
+    const form = document.getElementById('aso-form');
+    let elapsedTimer = null;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append('appName', document.getElementById('appName').value.trim());
+      formData.append('category', document.getElementById('category').value.trim());
+      formData.append('competitor', document.getElementById('competitor').value.trim());
+      formData.append('email', document.getElementById('email').value.trim());
+
+      const yourFiles = document.getElementById('yourScreens').files;
+      const competitorFiles = document.getElementById('competitorScreens').files;
+
+      for (const file of yourFiles) formData.append('Your_App_Screenshots', file);
+      for (const file of competitorFiles) formData.append('Competitor_App_Screenshots', file);
+
+      show('loading');
+      const startTime = Date.now();
+      const elapsedEl = document.getElementById('loading-elapsed');
+      elapsedTimer = setInterval(() => {
+        elapsedEl.textContent = `Elapsed: ${Math.floor((Date.now() - startTime) / 1000)}s`;
+      }, 1000);
+
+      try {
+        const response = await fetch(WEBHOOK_URL, { method: 'POST', body: formData });
+        clearInterval(elapsedTimer);
+
+        const data = await response.json();
+
+        if (!response.ok || data.status === 'error') {
+          renderError(data, response.status);
+          return;
+        }
+
+        renderSuccess(data);
+      } catch (err) {
+        clearInterval(elapsedTimer);
+        renderError({ code: 'network_error', message: err.message || 'Could not reach the server. Check your connection and try again.' });
+      }
+    });
+
+    function renderError(data, httpStatus) {
+      const code = data.code || 'unknown_error';
+      const message = data.message || 'An unexpected error occurred.';
+      const titleEl = document.getElementById('error-title');
+      const msgEl = document.getElementById('error-message');
+
+      const friendlyTitles = {
+        app_not_found: "We couldn't find that app",
+        screenshot_mismatch: "Screenshots don't match the app",
+        network_error: "Connection problem",
+        unknown_error: 'Something went wrong',
+      };
+      const friendlyMessages = {
+        app_not_found: `${message} Double-check the app name on Google Play and try again.`,
+        screenshot_mismatch: `${message} Make sure the screenshots you uploaded are actually from the app you specified.`,
+      };
+
+      titleEl.textContent = friendlyTitles[code] || friendlyTitles.unknown_error;
+      msgEl.textContent = friendlyMessages[code] || message;
+      show('error');
+    }
+
+    document.getElementById('error-retry').addEventListener('click', () => show('form'));
+
+    function renderSuccess(data) {
+      // Title-case the app names so "spotify" → "Spotify"
+      document.getElementById('result-app-name').textContent = titleCase(data.appName || 'Your app');
+      document.getElementById('result-competitor').textContent = titleCase(data.competitor || 'competitor');
+
+      const emailStatus = document.getElementById('email-status');
+      if (data.email_sent) {
+        emailStatus.innerHTML = `<span class="inline-flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Emailed to ${data.email || 'you'}</span>`;
+      } else {
+        emailStatus.textContent = '';
+      }
+
+      const yourVisual = parseVisual(data.your_app_visual);
+      const competitorVisual = parseVisual(data.competitor_visual);
+
+      renderVisualCard('your-visual-card', titleCase(data.appName) || 'Your app', yourVisual, true);
+      renderVisualCard('competitor-visual-card', titleCase(data.competitor) || 'Competitor', competitorVisual, false);
+
+      const reportEl = document.getElementById('audit-report');
+      reportEl.innerHTML = renderMarkdownLite(data.audit_report || '');
+
+      show('success');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function parseVisual(raw) {
+      if (!raw) return null;
+      if (typeof raw === 'object') return raw;
+      try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    function renderVisualCard(elId, appName, v, isYours) {
+      const el = document.getElementById(elId);
+      if (!v) {
+        el.innerHTML = `<p class="text-sm text-slate-400">No visual analysis available for ${escapeHtml(appName)}.</p>`;
+        return;
+      }
+      const total = v.total ?? '–';
+      const verdict = v.one_line_verdict || '';
+      const accent = isYours ? 'indigo' : 'slate';
+
+      el.innerHTML = `
+        <div class="flex items-baseline justify-between mb-3">
+          <h4 class="font-semibold text-slate-900">${escapeHtml(appName)}</h4>
+          <span class="text-3xl font-bold text-${accent}-600">${total}<span class="text-sm text-slate-400">/100</span></span>
+        </div>
+        ${verdict ? `<p class="text-sm text-slate-600 italic mb-4">"${escapeHtml(verdict)}"</p>` : ''}
+        <div class="space-y-2 mb-4">
+          ${scoreRow('Hook strength', v.hook_strength)}
+          ${scoreRow('Visual hierarchy', v.visual_hierarchy)}
+          ${scoreRow('Feature communication', v.feature_communication)}
+          ${scoreRow('Brand consistency', v.brand_consistency)}
+        </div>
+        ${listSection('Strengths', v.strengths, 'emerald')}
+        ${listSection('Weaknesses', v.weaknesses, 'rose')}
+      `;
+    }
+
+    function scoreRow(label, score) {
+      if (score == null) return '';
+      const pct = Math.max(0, Math.min(100, score));
+      return `
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-600">${escapeHtml(label)}</span>
+            <span class="font-medium text-slate-900">${pct}/25</span>
+          </div>
+          <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full bg-indigo-500 rounded-full" style="width: ${(pct/25)*100}%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function listSection(title, items, color) {
+      if (!Array.isArray(items) || items.length === 0) return '';
+      const lis = items.map(i => `<li class="text-xs text-slate-700 leading-relaxed">${escapeHtml(i)}</li>`).join('');
+      return `
+        <div class="mt-3">
+          <h5 class="text-xs font-semibold text-${color}-700 uppercase tracking-wide mb-1.5">${title}</h5>
+          <ul class="list-disc list-inside space-y-1">${lis}</ul>
+        </div>
+      `;
+    }
+
+    // Lightweight markdown with section header detection (UPPERCASE LINES → h3)
+    function renderMarkdownLite(text) {
+      const escaped = escapeHtml(text);
+      return escaped
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        // Detect ALL CAPS section headers (3+ chars, mostly uppercase)
+        .replace(/^([A-Z][A-Z\s&'']{4,}[A-Z])$/gm, '<h3>$1</h3>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/^\- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*?<\/li>\n?)+/gs, m => `<ul>${m}</ul>`);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    document.getElementById('success-restart').addEventListener('click', () => {
+      form.reset();
+      document.getElementById('yourScreensCount').textContent = 'Select 2+ screenshots';
+      document.getElementById('yourScreensCount').className = 'mt-1 text-xs text-slate-500';
+      document.getElementById('competitorScreensCount').textContent = 'Select 2+ screenshots';
+      document.getElementById('competitorScreensCount').className = 'mt-1 text-xs text-slate-500';
+      show('form');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
