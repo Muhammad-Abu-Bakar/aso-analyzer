@@ -2,7 +2,7 @@
 
 > Automated App Store Optimization audits for Google Play apps. Drop in your app name, your competitor's, and a few screenshots — get a prioritized action plan in your inbox in under a minute.
 
-🔗 **[Try it live →](https://muhammad-abu-bakar.github.io/aso-analyzer/)**
+> **Note:** The hosted n8n backend has been retired, so the live demo is offline. The screenshot below shows a completed audit. Workflow JSON and setup docs are in this repo.
 
 ![ASO Analyzer screenshot](screenshot.png)
 
